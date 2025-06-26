@@ -12,5 +12,5 @@ cd basicRAG-portfolio
 ```
 Install the dependencies in `requirements.txt`.
 ```
-pip install --quiet --upgrade -r requirements.txt
+pip install -r requirements.txt
 ```
