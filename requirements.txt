@@ -3,3 +3,4 @@ langchain-community
 langgraph
 python-dotenv
 beautifulsoup4
+langchain-google-genai

@@ -12,7 +12,7 @@ loader = WebBaseLoader(
     web_paths=("https://nikhilnamboodiri.netlify.app/",),
     bs_kwargs=dict(
         parse_only = bs4.SoupStrainer(
-            class_ = ("home-text", "about-title", "about-content", "skills-title", "tooltip", "projects-title", "project-content", "experience-title", "experience-item", "contact-title", "contact-content")
+            class_ = ("home-text", "about-title", "about-description", "skills-title", "tooltip", "projects-title", "project-details", "experience-title", "experience-content", "contact-title", "contact-content", "footer")
         )
     ),
 )
@@ -23,7 +23,7 @@ all_splits = text_splitter.split_documents(docs)
 
 _ = vector_store.add_documents(documents=all_splits)
 
-prompt = hub.pull("rlm/rag-prompt", api_url="https://api.smith.langchain.com")
+prompt = hub.pull("rlm/rag-prompt")
 
 class State(TypedDict):
     question: str
@@ -44,6 +44,6 @@ graph_builder = StateGraph(State).add_sequence([retrieve, generate])
 graph_builder.add_edge(START, "retrieve")
 graph = graph_builder.compile()
 
-q = input("Ask a question: ")
-response = graph.invoke({"question": q})
+# q = input("Ask a question: ")
+response = graph.invoke({"question": "Who am I?"}) #q
 print(response["answer"])

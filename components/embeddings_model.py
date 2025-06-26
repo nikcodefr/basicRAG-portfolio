@@ -1,9 +1,9 @@
 import getpass
 import os
 
-if not os.environ.get("OPENAI_API_KEY"):
-    os.environ["OPENAI_API_KEY"] = getpass.getpass("Enter API key for OpenAI: ")
+if not os.environ.get("GOOGLE_API_KEY"):
+  os.environ["GOOGLE_API_KEY"] = getpass.getpass("Enter API key for Google Gemini: ")
 
-from langchain_openai import OpenAIEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
-embeddings = OpenAIEmbeddings(model = "text-embedding-3-large")
+embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
