@@ -1,3 +1,5 @@
 langchain-text-splitters
 langchain-community
 langgraph
+python-dotenv
+beautifulsoup4
