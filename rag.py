@@ -7,12 +7,18 @@ from langgraph.graph import START, StateGraph
 from typing_extensions import List, TypedDict
 from components.vector_store import vector_store
 from components.chat_model import llm
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+WEB_SOURCE=os.getenv("WEB_SOURCE")
 
 loader = WebBaseLoader(
-    web_paths=("https://nikhilnamboodiri.netlify.app/",),
+    web_paths=(WEB_SOURCE,),
     bs_kwargs=dict(
         parse_only = bs4.SoupStrainer(
-            class_ = ("home-text", "about-title", "about-description", "skills-title", "tooltip", "projects-title", "project-details", "experience-title", "experience-content", "contact-title", "contact-content", "footer")
+            class_ = ("source text")
         )
     ),
 )
@@ -44,6 +50,11 @@ graph_builder = StateGraph(State).add_sequence([retrieve, generate])
 graph_builder.add_edge(START, "retrieve")
 graph = graph_builder.compile()
 
-# q = input("Ask a question: ")
-response = graph.invoke({"question": "Who am I?"}) #q
-print(response["answer"])
+while True:
+    q = input("Ask a question about Nikhil: (e to exit)\n")
+    if q.lower() == "e":
+        print("Catch you later. Have a great day!")
+        break
+    else:
+        response = graph.invoke({"question": q})
+        print(f"Response: {response["answer"]}\n")
