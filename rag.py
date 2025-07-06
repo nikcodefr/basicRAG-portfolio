@@ -23,21 +23,16 @@ class RAGPipeline:
         WEB_SOURCE = os.getenv("WEB_SOURCE")
         loader = WebBaseLoader(
             web_paths=(WEB_SOURCE,),
-            bs_kwargs=dict(
-                parse_only=bs4.SoupStrainer(
-                    class_=("source text")
-                )
-            ),
+            bs_kwargs=dict(parse_only=bs4.SoupStrainer(class_="source text")),
         )
         docs = loader.load()
 
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-        all_splits = text_splitter.split_documents(docs)
+        splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        splits = splitter.split_documents(docs)
 
-        _ = vector_store.add_documents(documents=all_splits)
+        vector_store.add_documents(documents=splits)
 
         self.prompt = hub.pull("rlm/rag-prompt")
-
         self.graph = self._build_graph()
 
     def _build_graph(self):
@@ -49,7 +44,7 @@ class RAGPipeline:
             docs_content = "\n\n".join(doc.page_content for doc in state["context"])
             messages = self.prompt.invoke({
                 "question": state["question"],
-                "context": docs_content
+                "context": docs_content,
             })
             response = llm.invoke(messages)
             return {"answer": response.content}
@@ -59,5 +54,14 @@ class RAGPipeline:
         return graph_builder.compile()
 
     def answer(self, question: str) -> str:
-        response = self.graph.invoke({"question": question})
-        return response["answer"]
+        result = self.graph.invoke({"question": question})
+        return result["answer"]
+
+pipeline_instance = None
+
+def get_pipeline():
+    global pipeline_instance
+    if pipeline_instance is None:
+        pipeline_instance = RAGPipeline()
+    return pipeline_instance
+
